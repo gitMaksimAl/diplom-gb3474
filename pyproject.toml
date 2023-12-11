@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "diplom"
+version = "0.1.0"
+description = "GB3474 Python developer 2022-2023"
+authors = ["Maksim Aleksanin <maksim.g00gle@gmail.com>"]
+license = "unlicense"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[tool.poetry.group.dev.dependencies]
+pylint = "^3.0.2"
+pyright = "^1.1.339"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
