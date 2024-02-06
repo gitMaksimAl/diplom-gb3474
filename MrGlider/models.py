@@ -1,5 +1,5 @@
 from sqlalchemy.orm import as_declarative, declared_attr
-from sqlalchemy import Column, Integer, String, DATETIME, ForeignKey, Float, BOOLEAN
+from sqlalchemy import Column, Integer, String, DATETIME, ForeignKey, BOOLEAN
 from pydantic import EmailStr
 from datetime import datetime
 from enum import Enum
@@ -28,6 +28,21 @@ class Base:
         return f"{cls.__name__.lower()}s"
 
 
+class User(Base):
+
+    id: int = Column(
+        Integer,
+        primary_key=True,
+        autoincrement=True,
+        default=None
+    )
+    email: Optional[EmailStr] = Column(EmailStr, default="")
+    firstname: str = Column(String)
+    lastname: Optional[str] = Column(String, default="")
+    timeZone: Optional[str] = Column(String, default="")
+    username: str = Column(String)
+
+
 class Event(Base):
 
     id: Optional[str] = Column(String(32), nullable=False, primary_key=True)
@@ -38,12 +53,12 @@ class Event(Base):
     summary: str = Column(String(12), default="")
     description: str = Column(String, default="")
     color_id: str = Column(String, default="")
-    creator: Optional[int] = Column(Integer, nullable=False) # Google Profile ID
+    creator: Optional[int] = Column(ForeignKey(f"{User.__tablename__}.id"), nullable=False) # Google Profile ID
     organizer: Optional[int] = Column(Integer, default=None) # Google Profile ID
     start: datetime = Column(DATETIME)
     end: Optional[datetime] = Column(DATETIME, default=None)
     ical_uid: Optional[str] = Column(String(60))
-    event_type: Optional[str] = Column(String, default="default")
+    event_type: Optional[str] = Column(String, default="default") # Google Calendar default value
 
 
 class EventBase(Base):
@@ -74,23 +89,16 @@ class Attachment(EventBase):
     file_id: Optional[str] = Column(String, default="") # GoogleDrive Id
 
 
-class User(Base):
+class RecurrenceRule(EventBase):
 
-    id: int = Column(
-        Integer,
-        primary_key=True,
-        autoincrement=True,
-        default=None
-    )
-    email: Optional[EmailStr] = Column(EmailStr, default="")
-    firstname: str = Column(String)
-    lastname: Optional[str] = Column(String, default="")
-    timeZone: Optional[str] = Column(String, default="")
-    username: str = Column(String)
+    freq: str = Column(String(6), default="")
+    interval: int = Column(Integer, default=0)
+    by_day: str = Column(String(8), defautl=0) # example '1234567'
+    until: datetime = Column(DATETIME, defautl=None)
 
 
 class Recurrence(EventBase):
 
     ex_date: Optional[datetime] = Column(DATETIME, default=None)
     r_date: Optional[datetime] = Column(DATETIME, default=None)
-    r_rule: Optional[...]
+    r_rule: Optional[int] = Column(ForeignKey(f"{RecurrenceRule.__tablename__}.id"), default=None)

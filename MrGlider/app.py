@@ -23,6 +23,11 @@ async def send_text(chat_id: int, text: str):
 
 @app.post("/")
 async def receive_update(request: requests.Request):
+    """
+    Handle for telegram webhook
+    :param request: request for parsing
+    :return: o.k message
+    """
     update = await request.json()
     response = await send_text(update["message"]["chat"]["id"], update["message"]["text"])
     if response.json()["ok"]:
