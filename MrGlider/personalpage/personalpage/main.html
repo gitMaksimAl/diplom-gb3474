@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block sricptblock %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
+    <script src="{{ url_for('static', path='scripts/calendar.js') }}"></script>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+{% endblock sricptblock %}
+{% block header %}
+    <div class="hat">
+        <a href="#" class="logo">Logo</a>
+        <nav class="nav-bar">
+                <button type="button" class="nav-button" >Home</button>
+                <button type="button" class="nav-button" onclick="GetWindow('skills')">Skills</button>
+                <button type="button" class="nav-button" onclick="GetWindow('certs')">Certificates</button>
+                <button type="button" class="nav-button" onclick="GetCalendarWindow()">Calendar</button>
+        </nav>
+        <div class="toggle-icon"><i class='bx bx-moon'></i></div>
+    </div>
+{% endblock header %}
+{% block content %}
+    <div class="modal-window active"></div>
+    <script src="{{ url_for('static', path='scripts/nav.js') }}"></script>
+    <section class="home">
+        <div class="home-content">
+            <h3>Hi, It's Me</h3>
+            <h1>{{ user.name }}</h1>
+            <h3>I'm a <span>Teacher</span></h3>
+            <p>{{ user.bio }}</p>
+            <div class="social-media">
+                {% for media in user.social_media %}
+                    <a href="{{ media.link }}"><i class="{{ 'bx bxl-%s' % media.name }}"></i></a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="home-image">
+            <img src="{{ url_for('static', path='images/my_foto.png') }}">
+        </div>
+        <script src="{{ url_for('static', path='scripts/night.js') }}"></script>
+    </section>
+{% endblock content %}

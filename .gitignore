@@ -2,3 +2,5 @@ info/config.d
 .idea
 .venv
 .env
+data
+dev
