@@ -3,24 +3,18 @@ from datetime import datetime
 from typing import Optional
 
 from django.db import models
-from django.utils import timezone
 
-
-class User(models.Model):
-    """
-    Fields
-        time_zone default='Europe/Moscow'
-            https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-    """
-    email: str = models.EmailField(unique=True)
-    firstname: str = models.CharField(max_length=255)
-    lastname: Optional[str] = models.CharField(max_length=255, default="")
-    time_zone: Optional[str] = models.CharField(max_length=255, default="Europe/Moscow")
-    username: str = models.CharField(max_length=12)
+from models import User
 
 
 class Color(models.Model):
-    color_id: str = models.CharField(max_length=32, default=uuid4().hex)
+    """
+    Attributes
+    __________
+        foreground | background : str
+            color code in hex 000000-FFFFFF
+    """
+    color_id: Optional[str] = models.CharField(max_length=32, default=uuid4().hex)
     foreground: str = models.CharField(max_length=6, default='000000')
     background: str = models.CharField(max_length=6, default='FFFFFF')
 
@@ -33,11 +27,14 @@ class EventDate(models.Model):
 
 class Event(models.Model):
     """
-    Fields
-        event_id base32hex string
-        creator Google Profile ID
-        organizer Google Profile ID
-        event_type from Google Calendar
+    Attributes
+    __________
+        event_id : str
+            base32hex string
+        creator | organizer : int
+            user primary key(for Google Profile ID use user.email)
+        event_type :str
+            from Google Calendar can be one of
             ['default', 'outOfOffice', 'workingLocation']
     """
     event_id: Optional[str] = models.CharField(max_length=32, default=uuid4().hex)
@@ -52,7 +49,7 @@ class Event(models.Model):
     summary: str = models.CharField(max_length=255)
     description: Optional[str] = models.TextField(default='')
     color_id: str = models.ForeignKey(to=Color.color_id, on_delete=models.CASCADE)
-    creator: str = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    creator: int = models.ForeignKey(to=User, on_delete=models.CASCADE)
     organizer: Optional[int] = models.ForeignKey(to=User, default=creator, on_delete=models.SET)
     start: datetime = models.ForeignKey(to=EventDate, on_delete=models.PROTECT)
     end: Optional[datetime] = models.ForeignKey(to=EventDate, on_delete=models.PROTECT)
@@ -84,9 +81,12 @@ class Attendee(EventBase):
 
 class Attachment(EventBase):
     """
-    Fields
-        mime_type https://www.iana.org/assignments/media-types/media-types.xhtml
-        file_id GoogleDrive Id
+    Attributes
+    __________
+        mime_type : str
+            https://www.iana.org/assignments/media-types/media-types.xhtml
+        file_id : str
+            GoogleDrive Id
     """
     file_url: str = models.TextField()
     title: str = models.CharField(max_length=25)
@@ -97,9 +97,12 @@ class Attachment(EventBase):
 
 class RecurrenceRule(EventBase):
     """
-    Fields
-        by_month example '1,...12'
-        by_day example '1234567'
+    Attributes
+    __________
+        by_month : str
+            example '1,...12'
+        by_day : str
+            example '1234567'
     """
     freq: str = models.CharField(choices=[
         ('daily', 'DAILY'),
@@ -116,13 +119,20 @@ class RecurrenceRule(EventBase):
 
 class Recurrence(EventBase):
     """
-    Rules and dates for recurring events.
-    Fields
-        ex_date exclude date
-        r_date recurrence date
-    NOTE:
+    Rules and dates for recurring events
+
+    ...
+
+    Attributes
+    __________
+        ex_date : datetime
+            exclude date
+        r_date : datetime
+            recurrence date
+    Note
+    ____
         Some fields can be omitted.
-    https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.5
+        https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.5
     """
     ex_date: Optional[datetime] = models.DateTimeField(default=None)
     d_start: Optional[datetime] = models.DateTimeField(default=None)
