@@ -1,7 +1,8 @@
-info/config.d
+info/config.d/
 .idea
-.venv
+.venv/
 .env
-data
-dev
-__pycache__
+data/
+dev/
+__pycache__/
+logs/

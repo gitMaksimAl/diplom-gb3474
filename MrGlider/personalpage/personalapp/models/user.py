@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 from django.db import models
@@ -5,6 +6,10 @@ from django.db import models
 
 class User(models.Model):
     """
+    User model by default is not active
+
+    ...
+
     Attributes
     __________
         email : str
@@ -20,3 +25,52 @@ class User(models.Model):
     last_name: Optional[str] = models.CharField(max_length=255, default="")
     time_zone: Optional[str] = models.CharField(max_length=255, default="Europe/Moscow")
     user_name: str = models.CharField(max_length=12)
+    biography: str = models.TextField()
+    active: bool = models.BooleanField(default=False)
+
+
+class UserBase(models.Model):
+    user_id: int = models.ForeignKey(to=User, on_delete=models.CASCADE)
+
+
+class SocialMedia(UserBase):
+    name: str = models.CharField(max_length=12)
+    link: str = models.CharField(max_length=255)
+
+
+class Skill(UserBase):
+    name: str = models.CharField(max_length=12)
+    title: str = models.CharField(max_length=255)
+    description: str = models.TextField()
+
+
+class Certificate(UserBase):
+    publisher: str = models.CharField(max_length=255)
+    title: str = models.CharField(max_length=255)
+    date: Optional[datetime.date] = models.DateField()
+    link: Optional[str] = models.CharField(max_length=255)
+
+
+class Project(UserBase):
+    name: str = models.CharField(max_length=25)
+    task: str = models.CharField(max_length=255)
+    description: Optional[str] = models.TextField()
+    status: str = models.CharField(
+        choices=[
+            ('onTrack', 'On Track'),
+            ('onHold', 'On Hold'),
+            ('done', 'Done'),
+            ('ready', 'Ready'),
+            ('offTrack', 'Off Track'),
+            ('blocked', 'Blocked')
+        ], max_length=8, default='onTrack'
+    )
+    link: Optional[str] = models.CharField(max_length=255)
+    role: str = models.CharField(
+        choices=[
+            ('contributor', 'contributor'),
+            ('executor', 'executor'),
+            ('customer', 'customer'),
+            ('sponsor', 'sponsor'),
+        ], max_length=11, default='contributor'
+    )

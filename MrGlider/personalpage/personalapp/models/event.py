@@ -3,8 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 from django.db import models
-
-from models import User
+from .user import User
 
 
 class Color(models.Model):
@@ -14,7 +13,7 @@ class Color(models.Model):
         foreground | background : str
             color code in hex 000000-FFFFFF
     """
-    color_id: Optional[str] = models.CharField(max_length=32, default=uuid4().hex)
+    color_id: Optional[str] = models.CharField(max_length=32, default=uuid4().hex, unique=True)
     foreground: str = models.CharField(max_length=6, default='000000')
     background: str = models.CharField(max_length=6, default='FFFFFF')
 
@@ -27,6 +26,10 @@ class EventDate(models.Model):
 
 class Event(models.Model):
     """
+    Event model based on Google calendar.event model. Some fields can be omitted
+
+    ...
+
     Attributes
     __________
         event_id : str
@@ -37,32 +40,44 @@ class Event(models.Model):
             from Google Calendar can be one of
             ['default', 'outOfOffice', 'workingLocation']
     """
-    event_id: Optional[str] = models.CharField(max_length=32, default=uuid4().hex)
+    event_id: Optional[str] = models.CharField(max_length=32, default=uuid4().hex, unique=True)
     status: Optional[str] = models.CharField(choices=[
         ('confirmed', 'confirmed'),
         ('tentative', 'tentative'),
         ('canceled', 'canceled'),
-    ], default='tentative')
+    ], max_length=9, default='tentative')
     html_link: Optional[str] = models.TextField(default='')
     created: Optional[datetime] = models.DateTimeField(auto_now_add=True)
     updated: datetime = models.DateTimeField(default=created)
     summary: str = models.CharField(max_length=255)
     description: Optional[str] = models.TextField(default='')
-    color_id: str = models.ForeignKey(to=Color.color_id, on_delete=models.CASCADE)
-    creator: int = models.ForeignKey(to=User, on_delete=models.CASCADE)
-    organizer: Optional[int] = models.ForeignKey(to=User, default=creator, on_delete=models.SET)
-    start: datetime = models.ForeignKey(to=EventDate, on_delete=models.PROTECT)
-    end: Optional[datetime] = models.ForeignKey(to=EventDate, on_delete=models.PROTECT)
+    color_id: str = models.ForeignKey(to=Color, to_field='color_id', on_delete=models.CASCADE)
+    creator: int = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='event_creator')
+    organizer: Optional[int] = models.ForeignKey(
+        to=User, default=creator,
+        on_delete=models.SET,
+        related_name='event_organizer')
+    start: datetime = models.ForeignKey(
+        to=EventDate,
+        on_delete=models.PROTECT,
+        related_name='event_start'
+    )
+    end: Optional[datetime] = models.ForeignKey(
+        to=EventDate,
+        on_delete=models.PROTECT,
+        related_name='event_end'
+    )
     event_type: Optional[str] = models.CharField(choices=[
         ('default', 'default'),
         ('outOfOffice', 'outOfOffice'),
         ('workingLocation', 'workingLocation'),
-    ], default='default')
+    ],max_length=15, default='default')
 
 
 class EventBase(models.Model):
     event_id: str = models.ForeignKey(
-        to=Event.event_id,
+        to=Event,
+        to_field='event_id',
         on_delete=models.CASCADE
     )
 
@@ -76,7 +91,7 @@ class Attendee(EventBase):
         ('declined', 'declined'),
         ('tentative', 'tentative'),
         ('accepted', 'accepted'),
-    ], default='needsAction')
+    ], max_length=11, default='needsAction')
 
 
 class Attachment(EventBase):
@@ -109,10 +124,10 @@ class RecurrenceRule(EventBase):
         ('weekly', 'WEEKLY'),
         ('monthly', 'MONTHLY'),
         ('yearly', 'YEARLY'),
-    ])
+    ], max_length=7)
     interval: int = models.IntegerField(default=0)
     by_month: str = models.CharField(max_length=24, default='')
-    by_day: str = models.CharField(max_length=7, defautl='')
+    by_day: str = models.CharField(max_length=7, default='')
     until: datetime = models.DateTimeField()
     count: int = models.IntegerField(default=0)
 

@@ -15,12 +15,6 @@
   font-family: var(--main-font);
 }
 
-/*.modal-window {*/
-/*  display: block;*/
-/*  box-sizing: border-box;*/
-/*  z-index: 101;*/
-/*}*/
-
 .container {
   position: relative;
   background: var(--main-bg-color);
@@ -195,11 +189,17 @@
   pointer-events: none;
 }
 
-#calendar {
+.modal-window.active {
   position: fixed;
-  left: 50%;
+  left: 60%;
   margin-top: 285px;
-  margin-left: -210px;
+}
+
+#calendar {
+  /*position: fixed;*/
+  /*left: 50%;*/
+  /*margin-top: 285px;*/
+  /*margin-left: -210px;*/
   -webkit-transform: translate3d(0, 0, 0);
   -moz-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
