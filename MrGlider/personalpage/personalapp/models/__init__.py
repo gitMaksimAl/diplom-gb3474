@@ -4,7 +4,7 @@ from .event import (
     Attachment,
     Recurrence,
 )
-from .user import User, SocialMedia, Skill, Project, Certificate
+from .user import User, SocialMedia, Skill, Project, Certificate, Contact
 
 
 __all__ = [
@@ -17,4 +17,5 @@ __all__ = [
     'Skill',
     'Certificate',
     'Project',
+    'Contact',
 ]

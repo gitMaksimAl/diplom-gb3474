@@ -26,6 +26,7 @@ class User(models.Model):
     time_zone: Optional[str] = models.CharField(max_length=255, default="Europe/Moscow")
     user_name: str = models.CharField(max_length=12)
     biography: str = models.TextField()
+    spec: str = models.CharField(max_length=255, default=None)
     active: bool = models.BooleanField(default=False)
 
 
@@ -68,7 +69,7 @@ class Project(UserBase):
             ('blocked', 'Blocked')
         ], max_length=8, default='onTrack'
     )
-    link: Optional[str] = models.CharField(max_length=255, default=None)
+    website: Optional[str] = models.CharField(max_length=255, default=None)
     role: str = models.CharField(
         choices=[
             ('contributor', 'contributor'),

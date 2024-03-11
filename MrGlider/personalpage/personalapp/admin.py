@@ -5,7 +5,8 @@ from .models import (
     Project,
     Skill,
     Certificate,
-    SocialMedia
+    SocialMedia,
+    Contact
 )
 
 
@@ -17,7 +18,7 @@ class UserAdmin(admin.ModelAdmin):
             None,
             {
                 'classes': ['wide'],
-                'fields': [('user_name', 'email', 'active')]
+                'fields': [('user_name', 'email', 'spec', 'active')]
             },
         ),
         (
@@ -28,7 +29,7 @@ class UserAdmin(admin.ModelAdmin):
             }
         )
     ]
-    ordering = ('active', 'name')
+    ordering = ('active', 'user_name')
 
 
 @admin.register(Project)
@@ -39,7 +40,7 @@ class ProjectAdmin(admin.ModelAdmin):
             None,
             {
                 'classes': ['wide'],
-                'fields': [('name', 'status')]
+                'fields': [('user_id', 'name', 'status')]
             },
         ),
         (
@@ -61,7 +62,7 @@ class ProjectAdmin(admin.ModelAdmin):
             None,
             {
                 'classes': ['wide'],
-                'fields': [('publisher', 'title')]
+                'fields': [('user_id', 'publisher', 'title')]
             },
         ),
         (
@@ -72,8 +73,9 @@ class ProjectAdmin(admin.ModelAdmin):
             }
         )
     ]
-    ordering = ('status',)
+    ordering = ('publisher',)
 
 
-admin.register(SocialMedia)
-admin.register(Skill)
+admin.site.register(SocialMedia)
+admin.site.register(Skill)
+admin.site.register(Contact)

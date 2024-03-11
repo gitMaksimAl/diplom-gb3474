@@ -36,8 +36,8 @@
             <section class="home">
                 <div class="home-content">
                     <h3>Hi, It's Me</h3>
-                    <h1>{{ user.name }}</h1>
-                    <h3>I'm a <span>Teacher</span></h3>
+                    <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+                    <h3>I'm a <span>{{ user.spec }}</span></h3>
                     <p>{{ user.biography }}</p>
                     <div class="social-media">
                         {% for media in social_media %}
