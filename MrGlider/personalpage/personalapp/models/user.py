@@ -22,7 +22,7 @@ class User(models.Model):
     """
     email: str = models.EmailField(unique=True)
     first_name: str = models.CharField(max_length=255)
-    last_name: Optional[str] = models.CharField(max_length=255, default="")
+    last_name: Optional[str] = models.CharField(max_length=255, default=None)
     time_zone: Optional[str] = models.CharField(max_length=255, default="Europe/Moscow")
     user_name: str = models.CharField(max_length=12)
     biography: str = models.TextField()
@@ -31,6 +31,9 @@ class User(models.Model):
 
 class UserBase(models.Model):
     user_id: int = models.ForeignKey(to=User, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
 
 
 class SocialMedia(UserBase):
@@ -47,14 +50,14 @@ class Skill(UserBase):
 class Certificate(UserBase):
     publisher: str = models.CharField(max_length=255)
     title: str = models.CharField(max_length=255)
-    date: Optional[datetime.date] = models.DateField()
-    link: Optional[str] = models.CharField(max_length=255)
+    date: Optional[datetime.date] = models.DateField(default=None)
+    link: Optional[str] = models.CharField(max_length=255, default=None)
 
 
 class Project(UserBase):
     name: str = models.CharField(max_length=25)
     task: str = models.CharField(max_length=255)
-    description: Optional[str] = models.TextField()
+    description: Optional[str] = models.TextField(default=None)
     status: str = models.CharField(
         choices=[
             ('onTrack', 'On Track'),
@@ -65,7 +68,7 @@ class Project(UserBase):
             ('blocked', 'Blocked')
         ], max_length=8, default='onTrack'
     )
-    link: Optional[str] = models.CharField(max_length=255)
+    link: Optional[str] = models.CharField(max_length=255, default=None)
     role: str = models.CharField(
         choices=[
             ('contributor', 'contributor'),
@@ -74,3 +77,9 @@ class Project(UserBase):
             ('sponsor', 'sponsor'),
         ], max_length=11, default='contributor'
     )
+
+
+class Contact(models.Model):
+    email: str = models.EmailField()
+    subject: str = models.CharField(max_length=255)
+    message: str = models.TextField()

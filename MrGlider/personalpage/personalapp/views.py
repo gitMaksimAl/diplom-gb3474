@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import QuerySet
 
 from .models import User, Event, SocialMedia, Project, Skill, Certificate
+from .forms import ContactForm
 
 
 def home(request: HttpRequest) -> HttpResponse:
@@ -42,3 +43,16 @@ def all_skills(request: HttpRequest) -> JsonResponse:
     query.group_by = ['name']
     skills = QuerySet(query=query, model=Skill)
     return JsonResponse(data={'skills': skills})
+
+
+def contact(request: HttpRequest) -> JsonResponse:
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return JsonResponse(
+                data={'form': form, 'message': 'Thanks for contact!'}
+            )
+    form = ContactForm()
+    context = {'form': form, 'message': 'Please fill form for contact'}
+    return JsonResponse(data=context)

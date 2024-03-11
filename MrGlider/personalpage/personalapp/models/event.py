@@ -13,7 +13,9 @@ class Color(models.Model):
         foreground | background : str
             color code in hex 000000-FFFFFF
     """
-    color_id: Optional[str] = models.CharField(max_length=32, default=uuid4().hex, unique=True)
+    color_id: Optional[str] = models.CharField(
+        max_length=32, default=uuid4().hex, unique=True
+    )
     foreground: str = models.CharField(max_length=6, default='000000')
     background: str = models.CharField(max_length=6, default='FFFFFF')
 
@@ -46,11 +48,11 @@ class Event(models.Model):
         ('tentative', 'tentative'),
         ('canceled', 'canceled'),
     ], max_length=9, default='tentative')
-    html_link: Optional[str] = models.TextField(default='')
+    html_link: Optional[str] = models.TextField(default=None)
     created: Optional[datetime] = models.DateTimeField(auto_now_add=True)
     updated: datetime = models.DateTimeField(default=created)
     summary: str = models.CharField(max_length=255)
-    description: Optional[str] = models.TextField(default='')
+    description: Optional[str] = models.TextField(default=None)
     color_id: str = models.ForeignKey(to=Color, to_field='color_id', on_delete=models.CASCADE)
     creator: int = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='event_creator')
     organizer: Optional[int] = models.ForeignKey(
@@ -65,7 +67,8 @@ class Event(models.Model):
     end: Optional[datetime] = models.ForeignKey(
         to=EventDate,
         on_delete=models.PROTECT,
-        related_name='event_end'
+        related_name='event_end',
+        default=None
     )
     event_type: Optional[str] = models.CharField(choices=[
         ('default', 'default'),
@@ -81,10 +84,13 @@ class EventBase(models.Model):
         on_delete=models.CASCADE
     )
 
+    class Meta:
+        abstract = True
+
 
 class Attendee(EventBase):
     display_name: str = models.CharField(max_length=12)
-    email: Optional[str] = models.EmailField(default='')
+    email: Optional[str] = models.EmailField(default=None)
     organizer: Optional[bool] = models.BooleanField(default=False)
     response_status: Optional[str] = models.CharField(choices=[
         ('needsAction', 'needsAction'),
@@ -105,9 +111,9 @@ class Attachment(EventBase):
     """
     file_url: str = models.TextField()
     title: str = models.CharField(max_length=25)
-    mime_type: Optional[str] = models.TextField(default='')
-    icon_link: Optional[str] = models.TextField(default='')
-    file_id: Optional[str] = models.TextField()
+    mime_type: Optional[str] = models.TextField(default=None)
+    icon_link: Optional[str] = models.TextField(default=None)
+    file_id: Optional[str] = models.TextField(default=None)
 
 
 class RecurrenceRule(EventBase):
