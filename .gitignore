@@ -1,7 +1,6 @@
 info/config.d/
 .idea
 .venv/
-.env
 data/
 dev/
 __pycache__/
