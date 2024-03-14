@@ -1,11 +1,14 @@
+import json
+
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse, Http404, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import QuerySet, Count
-from django.forms.models import model_to_dict
+from django.middleware.csrf import get_token
 
 from .models import User, Event, SocialMedia, Project, Skill, Certificate
 from .forms import ContactForm
+from .services import SkillEncoder, ProjectEncoder, CertificateEncoder
 
 
 def home(request: HttpRequest) -> HttpResponse:
@@ -26,28 +29,20 @@ def all_events(request: HttpRequest) -> JsonResponse:
 
 def all_certificates(request: HttpRequest) -> JsonResponse:
     user = User.objects.filter(active=True).first()
-    query = Certificate.objects.filter(user_id=user.pk).all().query
-    query.group_by = ['publisher']
-    certs = QuerySet(query=query, model=Certificate)
-    return JsonResponse(data={'certificates': certs})
+    certs = Certificate.objects.filter(user_id=user.pk).all()
+    return JsonResponse(data=list(certs), safe=False, encoder=CertificateEncoder)
 
 
 def all_projects(request: HttpRequest) -> JsonResponse:
     user = User.objects.filter(active=True).first()
     projects = Project.objects.filter(user_id=user.pk).all()
-    return JsonResponse(data={'projects': projects})
+    return JsonResponse(data=list(projects), safe=False, encoder=ProjectEncoder)
 
 
 def all_skills(request: HttpRequest) -> JsonResponse:
     user = User.objects.filter(active=True).first()
-    skills: QuerySet = (
-        Skill.objects.filter(user_id=user.pk)
-        .values('name', 'title', 'description')
-        .annotate(skill_count=Count('name'))
-        .order_by()
-    )
-    print(f"PRINT: {skills}")
-    return JsonResponse(data={'skills': skills.all()})
+    skills = Skill.objects.filter(user_id=user.pk).all()
+    return JsonResponse(data=list(skills), safe=False, encoder=SkillEncoder)
 
 
 def contact(request: HttpRequest) -> JsonResponse:
@@ -56,8 +51,13 @@ def contact(request: HttpRequest) -> JsonResponse:
         if form.is_valid():
             form.save()
             return JsonResponse(
-                data={'form': form, 'message': 'Thanks for contact!'}
+                data={'form': form.as_p(), 'message': 'Thanks for contact!'}
             )
     form = ContactForm()
-    context = {'form': form, 'message': 'Please fill form for contact'}
+    context = {
+        'form': form.as_p(),
+        'message': 'Please fill form for contact',
+        'csrfmiddlewaretoken': get_token(request)
+    }
+    print(context)
     return JsonResponse(data=context)

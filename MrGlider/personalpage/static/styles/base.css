@@ -192,22 +192,11 @@
 .modal-window.active {
   position: fixed;
   left: 60%;
-  margin-top: 285px;
-}
-
-#calendar {
-  /*position: fixed;*/
-  /*left: 50%;*/
-  /*margin-top: 285px;*/
-  /*margin-left: -210px;*/
-  -webkit-transform: translate3d(0, 0, 0);
-  -moz-transform: translate3d(0, 0, 0);
+  margin-top: 5%;
+  margin-left: -100px;
   transform: translate3d(0, 0, 0);
-  width: 420px;
-  height: 570px;
   overflow: hidden;
-  animation-name: calendar-show;
-  animation-duration: 0.4s;
+  opacity: 0.8;
 }
 
 /* Calendar pop-up animation */
