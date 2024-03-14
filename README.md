@@ -1,8 +1,9 @@
-# MrGlider. Telegram bot
+# Personal page. Portfolio
 
 ## Deploy
 
 ```commandline
-docker build --tag app -f Dokcerfile
-docker run -v /usr/share/mr_glider:/usr/share/mr_glider/data --env-file ./.env -p 8000:8000 --name mrglider app
+git clone https://github.com/gitMaksimAl/diplom-gb3474.git && cd diplom-gb3474
+chmod u+x start.sh
+source start.sh
 ```
