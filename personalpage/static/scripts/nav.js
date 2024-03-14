@@ -18,7 +18,7 @@ function GetSkills() {
     let targetElement = CreateWindow('skills');
     if (targetElement) {
         (async () => {
-            const response = await fetch(`${devDomain}skills/`);
+            const response = await fetch(`${domain}skills/`);
             let skills = await response.json();
             for (const skill of skills) {
                 let skillDiv = document.getElementById(skill.name);
@@ -40,7 +40,7 @@ function GetProjects() {
     let targetElement = CreateWindow('projects');
     if (targetElement) {
         (async() => {
-            const response = await fetch(`${devDomain}projects/`);
+            const response = await fetch(`${domain}projects/`);
             let projects = await response.json();
             for (const project of projects) {
                 let projectDiv = document.getElementById(project.name);
@@ -70,7 +70,7 @@ function GetCerts() {
     let targetElement = CreateWindow('certificates');
     if (targetElement) {
         (async() => {
-            const response = await fetch(`${devDomain}certificates/`);
+            const response = await fetch(`${domain}certificates/`);
             let certs = await response.json();
             for (const cert of certs) {
                 let certDiv = document.getElementById(cert.publisher);
@@ -92,11 +92,11 @@ function GetContact() {
     let targetElement = CreateWindow('contact');
     if (targetElement) {
         (async () => {
-            const response = await fetch(`${devDomain}contact/`);
+            const response = await fetch(`${domain}contact/`);
             let form = await response.json();
             targetElement.appendChild(document.createElement('form'));
             targetElement.firstChild.innerHTML = form.form;
-            targetElement.firstChild.action = `${devDomain}contact/`;
+            targetElement.firstChild.action = `${domain}contact/`;
             targetElement.firstChild.method = 'post';
             // targetElement.firstChild.onsubmit = SendForm;
             let input = document.createElement('input');
@@ -123,7 +123,7 @@ function SendForm() {
         'csrfmiddlewaretoken': document.getElementById('scrf_token').value
     };
     (async () => {
-        const post_response = await fetch(`${devDomain}contact/`,{
+        const post_response = await fetch(`${domain}contact/`,{
             method: 'post',
             headers: {
                 'Content-type': 'application/x-www-form-urlencoded'
